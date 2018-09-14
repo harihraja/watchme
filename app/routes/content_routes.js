@@ -1,6 +1,7 @@
 // routes/content_routes.js
 
 const request = require('request');
+const cheerio = require('cheerio');
 
 const CONTENT_INFO = [ 
   {
@@ -31,8 +32,36 @@ module.exports = function(app, db) {
           if (err) { 
             res.send({'error':'An error has occurred'});
           }
-          console.log(body);
-          res.send({'url': content_item.url, 'body': body});
+          $ = cheerio.load(body)
+
+          var movies = [];
+          $('.movie_info1').each(function(i, elem) {
+            movies[i] = $(this).text().replace(/\n/g, '').split(/(\d+\.\d)/g);
+            // movies[i].pop();
+            movies[i] = movies[i].filter( function(item) {
+              return item != '';
+            });
+
+            console.log(movies[i]);
+          });
+
+          movies = movies.filter(function(item) {
+            return item.length == 2 && Number(item[1]) >= 3.5 && Number(item[1]) <= 5.0;
+          });
+          movies = Array.from(new Set(movies));
+          movies.sort(function (movie1, movie2) {
+
+            // Sort by votes
+            // If the first item has a higher number, move it down
+            // If the first item has a lower number, move it up
+            if (Number(movie1[1]) > Number(movie2[1])) return -1;
+            if (Number(movie1[1]) < Number(movie2[1])) return 1;
+          
+          });
+          
+          // res.send(body);
+          // res.send({'url': content_item.url, 'body': body});
+          res.send({'url': content_item.url, 'movies': movies});
         });
 
     });
