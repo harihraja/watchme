@@ -35,12 +35,9 @@ module.exports = function(app, db) {
           $ = cheerio.load(body)
 
           var movies = [];
-          $('.movie_info1').each(function(i, elem) {
-            movies[i] = $(this).text().replace(/\n/g, '').split(/(\d+\.\d)/g);
-            // movies[i].pop();
-            movies[i] = movies[i].filter( function(item) {
-              return item != '';
-            });
+          $('.FIL_right').each(function(i, elem) {
+            let rating = Number($(this).find('.star_count').text()).toFixed(1);
+            movies[i] = [ $(this).find('h3').text(), rating];
 
             console.log(movies[i]);
           });
