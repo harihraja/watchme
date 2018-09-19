@@ -37,26 +37,25 @@ module.exports = function(app, db) {
           var movies = [];
           $('.FIL_right').each(function(i, elem) {
             let rating = Number($(this).find('.star_count').text()).toFixed(1);
-            movies[i] = [ $(this).find('h3').text(), rating];
+            let release_date = ($(this).find('h4').text().split(" | ")[0]);
+            movies[i] = [ $(this).find('h3').text(), rating, release_date];
 
             console.log(movies[i]);
           });
 
           movies = movies.filter(function(item) {
-            return item.length == 2 && Number(item[1]) >= 3.5 && Number(item[1]) <= 5.0;
+            return item.length >= 2 && Number(item[1]) >= 3.5 && Number(item[1]) <= 5.0;
           });
-          movies = Array.from(new Set(movies));
+          
           movies.sort(function (movie1, movie2) {
-
-            // Sort by votes
+          
+            // Sort by rating
             // If the first item has a higher number, move it down
             // If the first item has a lower number, move it up
             if (Number(movie1[1]) > Number(movie2[1])) return -1;
             if (Number(movie1[1]) < Number(movie2[1])) return 1;
-          
           });
-          
-          // res.send(body);
+
           // res.send({'url': content_item.url, 'body': body});
           res.send({'url': content_item.url, 'movies': movies});
         });
