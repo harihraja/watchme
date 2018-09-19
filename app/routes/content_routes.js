@@ -36,14 +36,14 @@ const CONTENT_INFO = [
 
 module.exports = function(app, db) {
 
-    app.get('/contentlist/:language/:region', (req, res) => {
+    app.get('/contentlist/:id/:language/:region/:type', (req, res) => {
         const lang = req.params.language;
         const region = req.params.region;
         console.log(lang);
         console.log(region);
 
         var content_item = CONTENT_INFO.find(function(item) {
-          return item.language == lang && item.region == region;
+          return item.language == lang && item.region == region && item.type == type;
         });
         console.log(content_item.url);
 
@@ -56,15 +56,17 @@ module.exports = function(app, db) {
 
           var movies = [];
           $('.FIL_right').each(function(i, elem) {
-            let rating = Number($(this).find('.star_count').text()).toFixed(1);
-            let release_date = ($(this).find('h4').text().split(" | ")[0]);
-            movies[i] = [ $(this).find('h3').text(), rating, release_date];
+            var movie = { watched : 'False' }
+            movie.title = $(this).find('h3').text();
+            movie.rating = Number($(this).find('.star_count').text()).toFixed(1);
+            movie.release_date = $(this).find('h4').text().split(" | ")[0];
+            movies[i] = movie;
 
             console.log(movies[i]);
           });
 
           movies = movies.filter(function(item) {
-            return item.length > 1 && Number(item[1]) >= Number(content_item.rating_limit);
+            return Number(item.rating) >= Number(content_item.rating_limit);
           });
           
           movies.sort(function (movie1, movie2) {
@@ -72,11 +74,10 @@ module.exports = function(app, db) {
             // Sort by rating
             // If the first item has a higher number, move it down
             // If the first item has a lower number, move it up
-            if (Number(movie1[1]) > Number(movie2[1])) return -1;
-            if (Number(movie1[1]) < Number(movie2[1])) return 1;
+            if (Number(movie1.rating) > Number(movie2.rating)) return -1;
+            if (Number(movie1.rating) < Number(movie2.rating)) return 1;
           });
 
-          // res.send({'url': content_item.url, 'body': body});
           res.send({'url': content_item.url, 'movies': movies});
         });
 
