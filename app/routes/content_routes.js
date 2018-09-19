@@ -6,24 +6,40 @@ const cheerio = require('cheerio');
 const CONTENT_INFO = [ 
   {
     language : "Hindi",
+    region : "IN",
     type : "Movies",
     url : "https://timesofindia.indiatimes.com/entertainment/hindi/movie-reviews"
   },
   {
     language : "English",
+    region : "US",
     type : "Movies",
     url : "https://www.rottentomatoes.com/browse/in-theaters/"
+  },
+  {
+    language : "Tamil",
+    region : "IN",
+    type : "Movies",
+    url : "https://timesofindia.indiatimes.com/entertainment/tamil/movie-reviews"
+  },
+  {
+    language : "English",
+    region : "IN",
+    type : "Movies",
+    url : "https://timesofindia.indiatimes.com/entertainment/english/movie-reviews"
   }
 ]
 
 module.exports = function(app, db) {
 
-    app.get('/contentlist/:language', (req, res) => {
+    app.get('/contentlist/:language/:region', (req, res) => {
         const lang = req.params.language;
+        const region = req.params.region;
         console.log(lang);
+        console.log(region);
 
         var content_item = CONTENT_INFO.find(function(item) {
-          return item.language == lang;
+          return item.language == lang && item.region == region;
         });
         console.log(content_item.url);
 
