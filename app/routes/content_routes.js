@@ -8,24 +8,28 @@ const CONTENT_INFO = [
     language : "Hindi",
     region : "IN",
     type : "Movies",
+    rating_limit : "3.5",
     url : "https://timesofindia.indiatimes.com/entertainment/hindi/movie-reviews"
   },
   {
     language : "English",
     region : "US",
     type : "Movies",
+    rating_limit : "80",
     url : "https://www.rottentomatoes.com/browse/in-theaters/"
   },
   {
     language : "Tamil",
     region : "IN",
     type : "Movies",
+    rating_limit : "3.0",
     url : "https://timesofindia.indiatimes.com/entertainment/tamil/movie-reviews"
   },
   {
     language : "English",
     region : "IN",
     type : "Movies",
+    rating_limit : "4.0",
     url : "https://timesofindia.indiatimes.com/entertainment/english/movie-reviews"
   }
 ]
@@ -60,7 +64,7 @@ module.exports = function(app, db) {
           });
 
           movies = movies.filter(function(item) {
-            return item.length >= 2 && Number(item[1]) >= 3.5 && Number(item[1]) <= 5.0;
+            return item.length > 1 && Number(item[1]) >= Number(content_item.rating_limit);
           });
           
           movies.sort(function (movie1, movie2) {
