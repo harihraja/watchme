@@ -36,14 +36,15 @@ const CONTENT_INFO = [
 
 module.exports = function(app, db) {
 
-    app.get('/contentlist/:user/:language/:region/:type', (req, res) => {
-      const user = req.params.user;
-      const lang = req.params.language;
-      const region = req.params.region;
-      const type = req.params.type;
+    app.get('/usercontentlist/:email/:language/:region/:type', (req, res) => {
 
-      const details = { '_id': new ObjectID(id) };
-      db.collection('watchlist').findOne(details, (err, item) => {
+      const details = { 
+        'userinfo.email': req.params.email, 
+        'contentinfo.language': req.params.language,
+        'contentinfo.region': req.params.region,
+        'contentinfo.type': req.params.type,
+       };
+      db.collection('usercontentlist').findOne(details, (err, item) => {
         if (err) {
           res.send({'error':'An error has occurred'});
         } else {
@@ -54,7 +55,7 @@ module.exports = function(app, db) {
 
 
     app.post('/usercontentlist/', (req, res) => {
-      const userinfo = { email: req.body.useremail };
+      const userinfo = { email: req.body.email };
       const lang = req.body.language;
       const region = req.body.region;
       const type = req.body.type;
@@ -95,15 +96,16 @@ module.exports = function(app, db) {
         });
 
         const usercontentlist = {'userinfo': userinfo, 'contentinfo': contentinfo, 'contentlist': contentlist};
-        res.send(usercontentlist);
+        // res.send(usercontentlist);
 
-        // db.collection('usercontentlist').insert(usercontentlist, (err, result) => {
-        //   if (err) { 
-        //     res.send({ 'error': 'An error has occurred' }); 
-        //   } else {
-        //     res.send({ 'id': result.ops[0], 'usercontentlist': usercontentlist});
-        //   }
-        // });
+        db.collection('usercontentlist').insert(usercontentlist, (err, result) => {
+          if (err) { 
+            res.send({ 'error': 'An error has occurred' }); 
+          } else {
+            res.send(result.ops[0]);
+          }
+        });
+
       });
 
     });
