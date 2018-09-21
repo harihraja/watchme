@@ -4,8 +4,10 @@
   "description": "Create Auto WatchList of Movies, TV Shows, etc",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "server": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "client": "cd client && webpack-dev-server --progress --inline",
+    "clientbuild": "cd client && webpack"
   },
   "author": "Hari Raja",
   "license": "ISC",
