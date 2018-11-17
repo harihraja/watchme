@@ -4,23 +4,31 @@ import { Button } from 'react-bootstrap';
 
 import axios from 'axios';
 
+const SERVER_URL = 'http://localhost:8000';
+
 class HelloWorld extends Component {
 	constructor() {
 		super();
-		this.state = { backend: 'Unknown', frontend: 'ReactJS' };
+		this.state = { email: 'x@y.com', language: 'English', region: 'US', type: 'Movies', contents: [] };
 	  }
 	  	
 
 	componentDidMount() {
 		console.log('componentDidMount');
-		fetch('http://localhost:8000/api/info')
+		fetch(SERVER_URL+'/usercontentlist/raja_hh@hotmail.com/Hindi/IN/Movies')
 		.then((res) => {
 			res.json() 
 			.then((jsonResult) => {
 				console.log(jsonResult);
-				var updateState = this.state;
-				updateState.backend = jsonResult.backend;
+				var updateState = {};
+				updateState.email = jsonResult.userinfo.email;
+				updateState.language = jsonResult.contentinfo.language;
+				updateState.region = jsonResult.contentinfo.region;
+				updateState.type = jsonResult.contentinfo.type;
+				updateState.contents = jsonResult.contentlist;
 				this.setState(updateState);
+				console.log(updateState);
+
 			})			
 		})
 		.catch((err) => {
@@ -30,12 +38,44 @@ class HelloWorld extends Component {
 
     render() {
     	return (
-			<div>
-				<Button bsStyle="danger">Danger</Button><br/><br/>
-				<Button bsStyle="primary">Primary</Button><br/><br/>
-				<Button bsStyle="success">Success</Button><br/><br/>
-				<h3>{this.state.backend}</h3>
-				<h3>{this.state.frontend}</h3>
+			// <div>
+			// 	<h2>{this.state.email}</h2>
+			// 	<h3>{this.state.language} : {this.state.region} : {this.state.type}</h3>
+			// 	<ul class="list-group">
+			// 		{this.state.contents.map((item) => (
+			// 			<li class="list-group-item list-group-item-info">{item.title}</li> 
+			// 		))}
+			// 	</ul>
+			// </div>
+			<div class="container">
+				<h2>User Content List</h2>
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="table-responsive">
+							<table class="table table-bordered table-hover">
+								<caption class="text-center">{this.state.email} : {this.state.language} : {this.state.region} : {this.state.type} </caption>
+								<thead>
+									<tr>
+										<th>Title</th>
+										<th>Rating</th>
+										<th>Release Date</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									{this.state.contents.map((item) => (
+										<tr>
+											<td>{item.title}</td>
+											<td>{item.rating}</td>
+											<td>{item.release_date}</td>
+											<td>{item.action}</td>
+										</tr> 
+									))}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
 			</div>
 		);
     }

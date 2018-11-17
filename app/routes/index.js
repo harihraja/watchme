@@ -18,13 +18,6 @@ module.exports = function(app, db) {
   contentRoutes(app, db);
   // Other route groups could go here, in the future
 
-  app.get('/api/info', (req, res) => {
-    body = {};
-    body.backend = 'NodeJS';
-    console.log(body);
-    res.send(body);
-  });
-  
   app.get('/', (req, res) => {
     console.log("/index.html");
     res.sendFile(path + "index.html");
@@ -41,7 +34,7 @@ module.exports = function(app, db) {
   });  
   
   app.get('*', (req, res) => {
-    console.log("/404.html");
+    console.log("URL Not Found: " + req.url);
     res.sendFile(path + "404.html");
   });  
 
