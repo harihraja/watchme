@@ -1,9 +1,9 @@
 import React from 'react';
 import { render } from 'react-dom';
-import HelloWorld from './HelloWorld.jsx';
+import UserContentList from './UserContentList.jsx';
 
 
 render(
-    <HelloWorld />,
+    <UserContentList />,
 	document.getElementById('app')
 );
