@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { Button } from 'react-bootstrap';
 
-import axios from 'axios';
+const queryString = require('query-string');
 
 const SERVER_URL = 'http://localhost:8000';
 
@@ -15,7 +15,11 @@ class HelloWorld extends Component {
 
 	componentDidMount() {
 		console.log('componentDidMount');
-		fetch(SERVER_URL+'/usercontentlist/raja_hh@hotmail.com/Hindi/IN/Movies')
+		const parsedQuery = queryString.parse(window.location.search);
+		var ajax_url = '/usercontentlist';
+		ajax_url = ajax_url+'/'+parsedQuery.user+'/'+parsedQuery.language;
+		ajax_url = ajax_url+'/'+parsedQuery.region+'/'+parsedQuery.type;
+		fetch(SERVER_URL+ajax_url)
 		.then((res) => {
 			res.json() 
 			.then((jsonResult) => {
