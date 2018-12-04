@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Table, Col, Row } from 'react-bootstrap';
 
 const queryString = require('query-string');
 
@@ -42,44 +42,54 @@ class HelloWorld extends Component {
 
     render() {
     	return (
-			// <div>
-			// 	<h2>{this.state.email}</h2>
-			// 	<h3>{this.state.language} : {this.state.region} : {this.state.type}</h3>
-			// 	<ul class="list-group">
-			// 		{this.state.contents.map((item) => (
-			// 			<li class="list-group-item list-group-item-info">{item.title}</li> 
-			// 		))}
-			// 	</ul>
-			// </div>
-			<div class="container">
-				<h2>User Content List</h2>
-				<div class="row">
-					<div class="col-xs-12">
-						<div class="table-responsive">
-							<table class="table table-bordered table-hover">
-								<caption class="text-center">{this.state.email} : {this.state.language} : {this.state.region} : {this.state.type} </caption>
-								<thead>
+			<div class="container-fluid">
+				<Row className="show-grid">
+					<Col sm={12}>
+						<h1>WatchList</h1>
+						<h4>{this.state.email} : {this.state.language} : {this.state.region} : {this.state.type} </h4>
+						<Button type="button" bsStyle="warning" bsSize="large">Refresh</Button><br/>
+					</Col>
+				</Row>
+				
+				<Row className="show-grid">
+					<Col sm={12}>
+						<Table responsive condensed striped hover>
+							<thead>
+								<tr>
+									<th>Title</th>
+									<th>Rating</th>
+									<th>Release Date</th>
+									<th>Watched?</th>
+								</tr>
+							</thead>
+							<tbody>
+								{this.state.contents.map((item) => (
 									<tr>
-										<th>Title</th>
-										<th>Rating</th>
-										<th>Release Date</th>
-										<th>Action</th>
-									</tr>
-								</thead>
-								<tbody>
-									{this.state.contents.map((item) => (
-										<tr>
-											<td>{item.title}</td>
-											<td>{item.rating}</td>
-											<td>{item.release_date}</td>
-											<td>{item.action}</td>
-										</tr> 
-									))}
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
+										<td>{item.title}</td>
+										<td>{item.rating}</td>
+										<td>{item.release_date}</td>
+										<td> 
+											<label class="bs-switch">
+												<input type="checkbox">
+													<span class="slider round"></span>
+												</input>
+											</label>
+											{/* <input type="checkbox"> </input> */}
+											{/* <div class="btn-group btn-group-toggle" data-toggle="buttons">
+												<label class="btn btn-secondary active">
+													<input type="radio" name="options" id="option1" autocomplete="off" checked> No </input> 
+												</label>
+												<label class="btn btn-secondary">
+													<input type="radio" name="options" id="option2" autocomplete="off"> Yes </input> 
+												</label>
+											</div> */}
+										</td>
+									</tr> 
+								))}
+							</tbody>
+						</Table>
+					</Col>
+				</Row>
 			</div>
 		);
     }
