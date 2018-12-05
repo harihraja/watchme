@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
-import { Button, Table, Col, Row } from 'react-bootstrap';
+import { Table, Col, Row, Grid } from 'react-bootstrap';
+import { Button, SplitButton, MenuItem } from 'react-bootstrap';
 
 const queryString = require('query-string');
 
@@ -11,21 +12,20 @@ class UserContentList extends Component {
 		super();
 		this.state = { email: 'x@y.com', language: 'English', region: 'US', type: 'Movies', contents: [] };
 
+		this.handleWatchedChange = this.handleWatchedChange.bind(this);
 		this.handleLangChange = this.handleLangChange.bind(this);
-		this.handleRefresh = this.handleRefresh.bind(this);
+		this.handleUpdate = this.handleUpdate.bind(this);
 	}
 	
-	update(params) {
+	getContentList(params) {
 		if(!params)
 			params = {};
-		if(!params.user)
-			params.user = this.state.email;
-		if(!params.language)
-			params.language = this.state.language;
-		if(!params.region)
-			params.region = this.state.region;
-		if(!params.type)
-			params.type = this.state.type;
+		params = { 
+			user: params.user ? params.user : this.state.email, 
+			language: params.language ? params.language : this.state.language, 
+			region: params.region ? params.region : this.state.region, 
+			type: params.type ? params.type : this.state.type, 
+		};
 
 		var ajax_url = '/usercontentlist';
 		ajax_url = ajax_url+'/'+params.user+'/'+params.language;
@@ -53,34 +53,66 @@ class UserContentList extends Component {
 	componentDidMount() {
 		console.log('componentDidMount');
 		const parsedQuery = queryString.parse(window.location.search);
-		var params = {}
-		params['user'] = parsedQuery.user;
-		params['language'] = parsedQuery.language;
-		params['region'] = parsedQuery.region;
-		params['type'] = parsedQuery.type;
-		this.update(params);
+		var params = { 
+			user: parsedQuery.user, 
+			language: parsedQuery.language, 
+			region: parsedQuery.region, 
+			type: parsedQuery.type
+		};
+		this.getContentList(params);
 	}
 
-	handleRefresh() {
-		this.update();
+	handleUpdate() {
+		// update the state changes
+		this.getContentList();
 	}
 
 	handleLangChange(event) {
 		var params = {language : event.target.value};
-		this.update(params);
+		this.getContentList(params);
+	}
+
+	handleWatchedChange(event) {
+		// console.log('name: '+event.target.name);
+		// console.log('value: '+event.target.value);
+		var updateState = this.state;
+		updateState.contents.forEach(function(item, index) {
+			if (item.title == event.target.name) {
+				item.action = event.target.value=='Yes' ? 'watched' : 'watch';
+				updateState[index] = item;
+				console.log({title: item.title, action: item.action});
+			}
+		});
+
+		this.setState(updateState);
+		// console.log(updateState);
 	}
 
     render() {
     	return (
-			<div class="container">
-				<Row>
+			<Grid>
+				<Row className="show-grid">
 					<Col sm={12}>
 						<h1>WatchList</h1>
 						<h4>{this.state.email} : {this.state.language} : {this.state.region} : {this.state.type} </h4>
 					</Col>
 				</Row>
-				
-				<Row>
+				<Row className="show-grid">
+					<Col sm={6} smOffset={6}>
+						{/* <SplitButton title="Language" id="lang-choice">
+							<MenuItem eventKey="1">English</MenuItem>
+							<MenuItem eventKey="2">Hindi</MenuItem>
+							<MenuItem eventKey="3">Tamil</MenuItem>
+						</SplitButton> */}
+						<select value={this.state.language} onChange={this.handleLangChange}>
+							<option value="English">English</option>
+							<option value="Hindi">Hindi</option>
+							<option value="Tamil">Tamil</option>
+						</select>
+						<Button type="button" bsStyle="warning" bsSize="xsmall" onClick={this.handleUpdate}>Update</Button><br/>
+					</Col>
+				</Row>
+				<Row className="show-grid">
 					<Col sm={12}>
 						<Table responsive condensed striped hover>
 							<thead>
@@ -98,7 +130,7 @@ class UserContentList extends Component {
 										<td>{item.rating}</td>
 										<td>{item.release_date}</td>
 										<td> 
-											<select value={item.action=='watch' ? 'No' : 'Yes'} onChange={this.handleWatchedChange}>
+											<select name={item.title} value={item.action=='watch' ? 'No' : 'Yes'} onChange={this.handleWatchedChange}>
 												<option value="Yes">Yes</option>
 												<option value="No">No</option>
 											</select>
@@ -123,17 +155,8 @@ class UserContentList extends Component {
 						</Table>
 					</Col>
 				</Row>
-				<Row>
-					<Col sm={6} smOffset={6}>
-						<select value={this.state.language} onChange={this.handleLangChange}>
-							<option value="English">English</option>
-							<option value="Hindi">Hindi</option>
-							<option value="Tamil">Tamil</option>
-						</select>
-						{/* <Button type="button" bsStyle="warning" bsSize="xsmall" onClick={this.handleRefresh}>Refresh</Button><br/> */}
-					</Col>
-				</Row>
-			</div>
+
+			</Grid>
 		);
     }
 }
