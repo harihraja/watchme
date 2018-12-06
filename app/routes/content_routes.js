@@ -46,6 +46,7 @@ module.exports = function(app, db) {
       'contentinfo.region': req.params.region,
       'contentinfo.type': req.params.type,
      };
+
     db.collection('usercontentlist').findOne(details, (err, ucl_item) => {
       if (err) {
         res.send({'error':'An error has occurred'});
@@ -59,13 +60,13 @@ module.exports = function(app, db) {
   });
 
 
-  app.put('/usercontentitem/', (req, res) => {
+  app.put('/usercontentitem/:email/:language/:region/:type/:title', (req, res) => {
 
       const details = { 
-        'userinfo.email': req.body.email, 
-        'contentinfo.language': req.body.language,
-        'contentinfo.region': req.body.region,
-        'contentinfo.type': req.body.type,
+        'userinfo.email': req.params.email, 
+        'contentinfo.language': req.params.language,
+        'contentinfo.region': req.params.region,
+        'contentinfo.type': req.params.type,
       };
 
       db.collection('usercontentlist').findOne(details, (err, ucl_item) => {
@@ -74,7 +75,7 @@ module.exports = function(app, db) {
         } else {
           var usercontentlist = ucl_item;
           usercontentlist.contentlist.forEach(function(item, index) {
-            if (item.title == req.body.title) {
+            if (item.title == req.params.title) {
               item.action = req.body.action;
               usercontentlist.contentlist[index] = item;
               console.log({title: item.title, action: item.action});
@@ -101,7 +102,7 @@ module.exports = function(app, db) {
         'userinfo.email': req.params.email, 
         'contentinfo.language': req.params.language,
         'contentinfo.region': req.params.region,
-        'contentinfo.type': req.params.type,
+        'contentinfo.type': req.params.type
        };
       db.collection('usercontentlist').findOne(details, (err, item) => {
         if (err) {
@@ -113,16 +114,14 @@ module.exports = function(app, db) {
     });
 
 
-    app.put('/usercontentlist/', (req, res) => {
-      const userinfo = { email: req.body.email };
-      const lang = req.body.language;
-      const region = req.body.region;
-      const type = req.body.type;
+    app.get('/generatecontentlist/:language/:region/:type', (req, res) => {
 
       var contentinfo = CONTENT_INFO.find(function(item) {
-        return item.language == lang && item.region == region && item.type == type;
+        return item.language == req.params.language && 
+          item.region == req.params.region && 
+          item.type == req.params.type;
       });
-      console.log(contentinfo);
+      // console.log(contentinfo);
 
       request(contentinfo.url, (err, response, body) => {
         if (err) { 
@@ -146,44 +145,69 @@ module.exports = function(app, db) {
           return Number(item.rating) >= Number(contentinfo.rating_limit);
         });
 
-        const details = { 
-          'userinfo.email': req.body.email, 
-          'contentinfo.language': req.body.language,
-          'contentinfo.region': req.body.region,
-          'contentinfo.type': req.body.type,
-        };
-
-        db.collection('usercontentlist').findOne(details, (err, ucl_item) => {
-          if (err) {
-            res.send({'error':'An error has occurred'});
-          } else {
-            // res.send(ucl_item);
-            const usercontentlist = {'userinfo': userinfo, 'contentinfo': contentinfo};
-            usercontentlist.contentlist = ucl_item.contentlist.concat(contentlist.filter(function (contentitem) {
-              return ucl_item.contentlist.findIndex(i => i.title === contentitem.title) < 0;
-            }));
-
-            usercontentlist.contentlist.sort(function (content1, content2) {
-              // Sort by rating
-              // If the first item has a higher number, move it down
-              // If the first item has a lower number, move it up
-              if (Number(content1.rating) > Number(content2.rating)) return -1;
-              if (Number(content1.rating) < Number(content2.rating)) return 1;
-            });
-    
-            // console.log(usercontentlist);
-            db.collection('usercontentlist').update({ '_id': new ObjectID(ucl_item._id) }, usercontentlist, (err, result) => {
-              if (err) {
-                res.send({ 'error': 'An error has occurred' }); 
-              } else {
-                res.send(result);
-              }
-            });
-          } 
+        contentlist.sort(function (content1, content2) {
+          // Sort by rating
+          // If the first item has a higher number, move it down
+          // If the first item has a lower number, move it up
+          if (Number(content1.rating) > Number(content2.rating)) return -1;
+          if (Number(content1.rating) < Number(content2.rating)) return 1;
         });
 
-
+        console.log(JSON.stringify(contentlist));
+        res.send({contentinfo: contentinfo, contentlist: contentlist});
       });
+
+    });
+
+
+    app.put('/usercontentlist/:email/:language/:region/:type', (req, res) => {
+      console.log(req.body);
+
+      const details = { 
+        'userinfo.email': req.params.email, 
+        'contentinfo.language': req.params.language,
+        'contentinfo.region': req.params.region,
+        'contentinfo.type': req.params.type
+      };
+      console.log(details);
+      
+      var contentlist = JSON.parse(req.body.contentlist);
+      var override = req.body.override=='True';
+
+      db.collection('usercontentlist').findOne(details, (err, ucl_item) => {
+        if (err) {
+          res.send({'error':'An error has occurred'});
+        } else {
+          // res.send(ucl_item);
+          const usercontentlist = {'userinfo': ucl_item.userinfo, 'contentinfo': ucl_item.contentinfo};
+          if (override) {
+            usercontentlist.contentlist = contentlist.concat(ucl_item.contentlist.filter(function (contentitem) {
+              return contentlist.findIndex(i => i.title === contentitem.title) < 0;
+            }));  
+          } else {
+            usercontentlist.contentlist = ucl_item.contentlist.concat(contentlist.filter(function (contentitem) {
+              return ucl_item.contentlist.findIndex(i => i.title === contentitem.title) < 0;
+            }));  
+          }
+          usercontentlist.contentlist.sort(function (content1, content2) {
+            // Sort by rating
+            // If the first item has a higher number, move it down
+            // If the first item has a lower number, move it up
+            if (Number(content1.rating) > Number(content2.rating)) return -1;
+            if (Number(content1.rating) < Number(content2.rating)) return 1;
+          });
+  
+          console.log(usercontentlist);
+          db.collection('usercontentlist').update({ '_id': new ObjectID(ucl_item._id) }, usercontentlist, (err, result) => {
+            if (err) {
+              res.send({ 'error': 'An error has occurred' }); 
+            } else {
+              res.send(result);
+            }
+          });
+        } 
+      });
+
 
     });
 

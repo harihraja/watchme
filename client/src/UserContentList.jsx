@@ -34,7 +34,7 @@ class UserContentList extends Component {
 		.then((res) => {
 			res.json() 
 			.then((jsonResult) => {
-				console.log(jsonResult);
+				// console.log(jsonResult);
 				var updateState = {};
 				updateState.email = jsonResult.userinfo.email;
 				updateState.language = jsonResult.contentinfo.language;
@@ -42,7 +42,7 @@ class UserContentList extends Component {
 				updateState.type = jsonResult.contentinfo.type;
 				updateState.contents = jsonResult.contentlist;
 				this.setState(updateState);
-				console.log(updateState);
+				// console.log(updateState);
 			})			
 		})
 		.catch((err) => {
@@ -63,6 +63,7 @@ class UserContentList extends Component {
 	}
 
 	handleUpdate() {
+		console.log('handleUpdate');
 		// update the state changes
 		this.getContentList();
 	}
@@ -76,16 +77,43 @@ class UserContentList extends Component {
 		// console.log('name: '+event.target.name);
 		// console.log('value: '+event.target.value);
 		var updateState = this.state;
+		var title = event.target.name;
+		var action = event.target.value=='No' ? 'watch' : 'watched';
 		updateState.contents.forEach(function(item, index) {
-			if (item.title == event.target.name) {
-				item.action = event.target.value=='Yes' ? 'watched' : 'watch';
+			if (item.title == title) {
+				item.action = action;
 				updateState[index] = item;
-				console.log({title: item.title, action: item.action});
+				// console.log({title: item.title, action: item.action});
 			}
 		});
 
 		this.setState(updateState);
 		// console.log(updateState);
+
+		var ajax_url = '/usercontentitem' 
+			+ '/' + this.state.email 
+			+ '/' + this.state.language 
+			+ '/' + this.state.region 
+			+ '/' + this.state.type 
+			+ '/' + title;
+		var body = { action: action };
+		const formBody = Object.entries(body).map(([key, value]) => 
+			encodeURIComponent(key) + '=' + encodeURIComponent(value)).join('&');
+		console.log(body);
+		fetch(SERVER_URL+ajax_url, {
+			method: 'PUT', 
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'}, 
+			body: formBody
+		})
+		.then((res) => {
+			res.json() 
+			.then((jsonResult) => {
+				// console.log(jsonResult);
+			})			
+		})
+		.catch((err) => {
+			console.log(err);
+		});	
 	}
 
     render() {
