@@ -38,6 +38,63 @@ const CONTENT_INFO = [
 
 module.exports = function(app, db) {
 
+  app.get('/usercontentitem/:email/:language/:region/:type/:title', (req, res) => {
+
+    const details = { 
+      'userinfo.email': req.params.email, 
+      'contentinfo.language': req.params.language,
+      'contentinfo.region': req.params.region,
+      'contentinfo.type': req.params.type,
+     };
+    db.collection('usercontentlist').findOne(details, (err, ucl_item) => {
+      if (err) {
+        res.send({'error':'An error has occurred'});
+      } else {
+        contentitem = ucl_item.contentlist.find(function(element) {
+          return element.title == req.params.title;
+        });
+        res.send(contentitem);
+      } 
+    });
+  });
+
+
+  app.put('/usercontentitem/', (req, res) => {
+
+      const details = { 
+        'userinfo.email': req.body.email, 
+        'contentinfo.language': req.body.language,
+        'contentinfo.region': req.body.region,
+        'contentinfo.type': req.body.type,
+      };
+
+      db.collection('usercontentlist').findOne(details, (err, ucl_item) => {
+        if (err) {
+          res.send({'error':'An error has occurred'});
+        } else {
+          var usercontentlist = ucl_item;
+          usercontentlist.contentlist.forEach(function(item, index) {
+            if (item.title == req.body.title) {
+              item.action = req.body.action;
+              usercontentlist.contentlist[index] = item;
+              console.log({title: item.title, action: item.action});
+            }
+          });
+
+          // console.log(usercontentlist);
+          db.collection('usercontentlist').update({ '_id': new ObjectID(ucl_item._id) }, usercontentlist, (err, result) => {
+            if (err) {
+              res.send({ 'error': 'An error has occurred' }); 
+            } else {
+              res.send(result);
+            }
+          });
+        } 
+      });
+
+    });
+
+
     app.get('/usercontentlist/:email/:language/:region/:type', (req, res) => {
 
       const details = { 
@@ -88,9 +145,6 @@ module.exports = function(app, db) {
         contentlist = contentlist.filter(function(item) {
           return Number(item.rating) >= Number(contentinfo.rating_limit);
         });
-        
-        // const usercontentlist = {'userinfo': userinfo, 'contentinfo': contentinfo, 'contentlist': contentlist};
-        // res.send(usercontentlist);
 
         const details = { 
           'userinfo.email': req.body.email, 
