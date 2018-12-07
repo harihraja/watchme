@@ -24,7 +24,7 @@ const CONTENT_INFO = [
     language : "Tamil",
     region : "IN",
     type : "Movies",
-    rating_limit : "3.0",
+    rating_limit : "3.5",
     url : "https://timesofindia.indiatimes.com/entertainment/tamil/movie-reviews"
   },
   {
@@ -173,6 +173,7 @@ module.exports = function(app, db) {
       
       var contentlist = JSON.parse(req.body.contentlist);
       var override = req.body.override=='True';
+      var replace = req.body.replace=='True';
 
       db.collection('usercontentlist').findOne(details, (err, ucl_item) => {
         if (err) {
@@ -180,7 +181,9 @@ module.exports = function(app, db) {
         } else {
           // res.send(ucl_item);
           const usercontentlist = {'userinfo': ucl_item.userinfo, 'contentinfo': ucl_item.contentinfo};
-          if (override) {
+          if (replace) {
+            usercontentlist.contentlist = contentlist;
+          } else if (override) {
             usercontentlist.contentlist = contentlist.concat(ucl_item.contentlist.filter(function (contentitem) {
               return contentlist.findIndex(i => i.title === contentitem.title) < 0;
             }));  
