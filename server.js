@@ -3,7 +3,10 @@
 const express        = require('express');
 const MongoClient    = require('mongodb').MongoClient;
 const bodyParser     = require('body-parser');
-const db             = require('./config/db');
+
+// const db             = require('./config/db');
+// const MONGOLAB_URL   = db.url;
+const MONGODB_URL   = process.env.MONGOLAB_URI;
 
 const app            = express();
 
@@ -11,7 +14,7 @@ const port = 8000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-MongoClient.connect(db.url, (err, database) => {
+MongoClient.connect(MONGODB_URL, (err, database) => {
     if (err) return console.log(err)
                         
     // Make sure you add the database name and not the collection name
