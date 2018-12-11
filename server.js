@@ -4,9 +4,9 @@ const express        = require('express');
 const MongoClient    = require('mongodb').MongoClient;
 const bodyParser     = require('body-parser');
 
-const db             = require('./config/db');
-const MONGODB_URL   = db.url;
-// const MONGODB_URL   = process.env.MONGOLAB_URI;
+// const db             = require('./config/db');
+// const MONGODB_URL   = db.url;
+const MONGODB_URL   = process.env.MONGOLAB_URI;
 
 const app            = express();
 
