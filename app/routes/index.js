@@ -19,24 +19,10 @@ module.exports = function(app, db) {
   contentRoutes(app, db);
   // Other route groups could go here, in the future
 
-  app.get('/', (req, res) => {
-    console.log("/index.html");
-    res.sendFile(path + "index.html");
-  });  
+  app.use(express.static(path.join(__dirname, 'client/build'))) ?
 
-  app.get('/about', (req, res) => {
-    console.log("/about.html");
-    res.sendFile(path + "about.html");
-  });  
-
-  app.get('/contact', (req, res) => {
-    console.log("/contact.html");
-    res.sendFile(path + "contact.html");
-  });  
-  
-  app.get('*', (req, res) => {
-    console.log("URL Not Found: " + req.url);
-    res.sendFile(path + "404.html");
-  });  
+  app.get('*', (request, response) => {
+  response.sendFile(path.join(__dirname+'/client/build/index.html'))
+  })
 
 };
