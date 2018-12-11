@@ -3,7 +3,7 @@
 const wlRoutes = require('./wl_routes');
 const contentRoutes = require('./content_routes');
 
-
+var path = require('path');
 // var path = __dirname + '/views/';
 
 module.exports = function(app, db) {
