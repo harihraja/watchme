@@ -20,7 +20,7 @@ module.exports = function(app, db) {
   // Other route groups could go here, in the future
 
   app.get('*', (request, response) => {
-  response.sendFile(path.join(__dirname+'/client/build/index.html'))
+  response.sendFile(path.join(__dirname+'/client/index.html'))
   });
 
 };
