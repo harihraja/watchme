@@ -1,6 +1,5 @@
 .DS_Store
 node_modules/
-config/db.js
 package-lock.json
 
 client/node_modules
