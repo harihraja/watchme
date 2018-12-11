@@ -19,8 +19,6 @@ module.exports = function(app, db) {
   contentRoutes(app, db);
   // Other route groups could go here, in the future
 
-  app.use(express.static(path.join(__dirname, 'client/build')));
-
   app.get('*', (request, response) => {
   response.sendFile(path.join(__dirname+'/client/build/index.html'))
   });
