@@ -23,7 +23,7 @@ module.exports = function(app, db) {
   app.use(express.static(path.join(__dirname, '../../../client')));
 
   app.get('/', (request, response) => {
-  response.sendFile(path.resolve(__dirname, 'index.html'));
+  response.sendFile(path.resolve(__dirname, '../../../client/index.html'));
   });
 
 };

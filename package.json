@@ -13,7 +13,7 @@
     "client": "cd client && webpack-dev-server --progress --inline",
     "clientbuild": "cd client && webpack",
     "start": "node server.js",
-    "heroku-postbuild": "cd client && npm install && npm run build && ls"
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "author": "Hari Raja",
   "license": "ISC",
