@@ -1,5 +1,6 @@
 // routes/index.js
 
+const express        = require('express');
 const wlRoutes = require('./wl_routes');
 const contentRoutes = require('./content_routes');
 
@@ -19,7 +20,7 @@ module.exports = function(app, db) {
   contentRoutes(app, db);
   // Other route groups could go here, in the future
 
-  app.use(app.static(path.join(__dirname, '../../../client')))
+  app.use(express.static(path.join(__dirname, '../../../client')))
 
   app.get('/', (request, response) => {
   response.sendFile(path.join(__dirname+'../../../client/index.html'))
