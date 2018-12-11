@@ -28,7 +28,7 @@ class UserContentList extends Component {
 			type: params.type ? params.type : this.state.type, 
 		};
 
-		var ajax_url = '/usercontentlist';
+		var ajax_url = 'usercontentlist';
 		ajax_url = ajax_url+'/'+params.user+'/'+params.language;
 		ajax_url = ajax_url+'/'+params.region+'/'+params.type;
 		fetch(SERVER_URL+ajax_url)
@@ -91,7 +91,7 @@ class UserContentList extends Component {
 		this.setState(updateState);
 		// console.log(updateState);
 
-		var ajax_url = '/usercontentitem' 
+		var ajax_url = 'usercontentitem' 
 			+ '/' + this.state.email 
 			+ '/' + this.state.language 
 			+ '/' + this.state.region 
