@@ -3,11 +3,17 @@
   "version": "1.0.0",
   "description": "Create Auto WatchList of Movies, TV Shows, etc",
   "main": "index.js",
+  "engines": {
+    "node": "~10.5.0",
+    "npm": "~6.1.0"
+  },
   "scripts": {
     "server": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "client": "cd client && webpack-dev-server --progress --inline",
-    "clientbuild": "cd client && webpack"
+    "clientbuild": "cd client && webpack",
+    "start": "node server.js",
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "author": "Hari Raja",
   "license": "ISC",

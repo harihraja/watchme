@@ -5,7 +5,8 @@ import { Button, SplitButton, MenuItem } from 'react-bootstrap';
 
 const queryString = require('query-string');
 
-const SERVER_URL = 'http://localhost:8000';
+// const SERVER_URL = 'http://localhost:8000';
+const SERVER_URL = 'https://fierce-ravine-70068.herokuapp.com/';
 
 class UserContentList extends Component {
 	constructor() {
