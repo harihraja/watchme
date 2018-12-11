@@ -4,7 +4,7 @@ const wlRoutes = require('./wl_routes');
 const contentRoutes = require('./content_routes');
 
 
-var path = __dirname + '/views/';
+// var path = __dirname + '/views/';
 
 module.exports = function(app, db) {
 
