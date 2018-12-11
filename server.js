@@ -21,8 +21,9 @@ MongoClient.connect(MONGODB_URL, (err, database) => {
     dbase = database.db("myriad_mdb")
 
     require('./app/routes')(app, dbase);
-    app.listen(port, () => {
-      console.log('We are live on ' + port);
+    app.listen((process.env.PORT || port), () => {
+      // console.log('We are live on ' + port);
+      console.log('We are live on ' + process.env.PORT);
     });             
   })
 
