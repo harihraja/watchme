@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --progress --inline",
-    "build": "webpack"
+    "build": "webpack -p"
   },
   "author": "Hari Raja",
   "license": "ISC",
