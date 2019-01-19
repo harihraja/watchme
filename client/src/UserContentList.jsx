@@ -36,7 +36,7 @@ class UserContentList extends Component {
 		.then((res) => {
 			res.json() 
 			.then((jsonResult) => {
-				// console.log(jsonResult);
+				console.log(jsonResult);
 				var updateState = {};
 				updateState.email = jsonResult.userinfo.email;
 				updateState.language = jsonResult.contentinfo.language;
@@ -45,6 +45,39 @@ class UserContentList extends Component {
 				updateState.contents = jsonResult.contentlist;
 				this.setState(updateState);
 				// console.log(updateState);
+			})			
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+	}
+
+	updateContentList(params) {
+		if(!params)
+			params = {};
+		params = { 
+			user: params.user ? params.user : this.state.email, 
+			language: params.language ? params.language : this.state.language, 
+			region: params.region ? params.region : this.state.region, 
+			type: params.type ? params.type : this.state.type, 
+		};
+
+		var ajax_url = 'updatecontentlist';
+		ajax_url = ajax_url+'/'+params.user+'/'+params.language;
+		ajax_url = ajax_url+'/'+params.region+'/'+params.type;
+		fetch(SERVER_URL+ajax_url)
+		.then((res) => {
+			res.json() 
+			.then((jsonResult) => {
+				console.log(jsonResult);
+				var updateState = {};
+				updateState.email = jsonResult.userinfo.email;
+				updateState.language = jsonResult.contentinfo.language;
+				updateState.region = jsonResult.contentinfo.region;
+				updateState.type = jsonResult.contentinfo.type;
+				updateState.contents = jsonResult.contentlist;
+				this.setState(updateState);
+				console.log(updateState);
 			})			
 		})
 		.catch((err) => {
@@ -67,7 +100,7 @@ class UserContentList extends Component {
 	handleUpdate() {
 		console.log('handleUpdate');
 		// update the state changes
-		this.getContentList();
+		this.updateContentList();
 	}
 
 	handleLangChange(event) {

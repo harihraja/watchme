@@ -109,8 +109,103 @@ module.exports = function(app, db) {
           res.send({'error':'An error has occurred'});
         } else {
           res.send(item);
+          console.log(item);
         } 
       });
+    });
+
+    app.get('/updatecontentlist/:email/:language/:region/:type', (req, res) => {
+
+      var contentinfo = CONTENT_INFO.find(function(item) {
+        return item.language == req.params.language && 
+          item.region == req.params.region && 
+          item.type == req.params.type;
+      });
+      console.log(contentinfo);
+
+      const details = { 
+        'userinfo.email': req.params.email, 
+        'contentinfo.language': req.params.language,
+        'contentinfo.region': req.params.region,
+        'contentinfo.type': req.params.type
+      };
+      console.log(details);
+      
+      var override = req.params.override=='True';
+      var replace = req.params.replace=='True';
+
+      request(contentinfo.url, (err, response, body) => {
+        if (err) { 
+          res.send({'error':'An error has occurred'});
+        }
+        $ = cheerio.load(body);
+
+        var contentlist = [];
+        $('.FIL_right').each(function(i, elem) {
+          var contentitem = {}
+          contentitem.title = $(this).find('h3').text();
+          contentitem.rating = Number($(this).find('.star_count').text()).toFixed(1);
+          contentitem.release_date = $(this).find('h4').text().split(" | ")[0];
+          contentitem.action = 'watch';
+          contentlist[i] = contentitem;
+
+          // console.log(contentlist[i]);
+        });
+
+        contentlist = contentlist.filter(function(item) {
+          return Number(item.rating) >= Number(contentinfo.rating_limit);
+        });
+
+        contentlist.sort(function (content1, content2) {
+          // Sort by rating
+          // If the first item has a higher number, move it down
+          // If the first item has a lower number, move it up
+          if (Number(content1.rating) > Number(content2.rating)) return -1;
+          if (Number(content1.rating) < Number(content2.rating)) return 1;
+        });
+
+        console.log("Generated...");
+        console.log(contentlist);
+
+        db.collection('usercontentlist').findOne(details, (err, ucl_item) => {
+          if (err) {
+            res.send({'error':'An error has occurred'});
+          } else {
+            // res.send(ucl_item);
+            const usercontentlist = {'userinfo': ucl_item.userinfo, 'contentinfo': ucl_item.contentinfo};
+            if (replace) {
+              usercontentlist.contentlist = contentlist;
+            } else if (override) {
+              usercontentlist.contentlist = contentlist.concat(ucl_item.contentlist.filter(function (contentitem) {
+                return contentlist.findIndex(i => i.title === contentitem.title) < 0;
+              }));  
+            } else {
+              usercontentlist.contentlist = ucl_item.contentlist.concat(contentlist.filter(function (contentitem) {
+                return ucl_item.contentlist.findIndex(i => i.title === contentitem.title) < 0;
+              }));  
+            }
+            usercontentlist.contentlist.sort(function (content1, content2) {
+              // Sort by rating
+              // If the first item has a higher number, move it down
+              // If the first item has a lower number, move it up
+              if (Number(content1.rating) > Number(content2.rating)) return -1;
+              if (Number(content1.rating) < Number(content2.rating)) return 1;
+            });
+    
+            console.log("Updating...");
+            console.log(usercontentlist);
+            db.collection('usercontentlist').update({ '_id': new ObjectID(ucl_item._id) }, usercontentlist, (err, result) => {
+              if (err) {
+                res.send({ 'error': 'An error has occurred' }); 
+              } else {
+                res.send({contentinfo: contentinfo, contentlist: contentlist});
+              }
+            });
+          } 
+        });
+                
+      });
+
     });
 
 
