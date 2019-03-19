@@ -96,7 +96,7 @@ module.exports = function(app, db) {
     });
 
 
-    app.get('/usercontentlist/:email/:language/:region/:type', (req, res) => {
+    app.get('/usercontentlist/:email/:language/:region/:type/:sorttype/:sortdir', (req, res) => {
 
       const details = { 
         'userinfo.email': req.params.email, 
@@ -108,6 +108,25 @@ module.exports = function(app, db) {
         if (err) {
           res.send({'error':'An error has occurred'});
         } else {
+          sortparams = { 
+            type: req.params.sorttype ? req.params.sorttype : 'rating', 
+            direction: req.params.sortdir ? req.params.sortdir : 'down' 
+          };    
+
+          item.contentlist.sort(function (content1, content2) {
+            var retval = (sortparams.direction=='up') ? 1 : -1;
+
+            if (sortparams.type=='rating') {
+              return (Number(content1.rating) > Number(content2.rating)) ? retval : -retval;
+            } else if (sortparams.type=='title') {
+              return (content1.title > content2.title) ? retval : -retval;
+            } else if (sortparams.type=='action') {
+              return (content1.action > content2.action) ? retval : -retval;
+            } else if (sortparams.type=='release_date') {
+              return (new Date(content1.release_date) > new Date(content2.release_date)) ? retval : -retval;
+            }
+          });
+    
           res.send(item);
           console.log(item);
         } 

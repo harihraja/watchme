@@ -12,7 +12,15 @@ const SERVER_URL = '/';
 class UserContentList extends Component {
 	constructor() {
 		super();
-		this.state = { email: 'x@y.com', language: 'English', region: 'US', type: 'Movies', contents: [] };
+		this.state = { 
+			email: 'x@y.com', 
+			language: 'Hindi', 
+			region: 'IN', 
+			type: 'Movies', 
+			contents: [],
+			sorttype: 'release_date',
+			sortdir: 'down'
+		 };
 
 		this.handleWatchedChange = this.handleWatchedChange.bind(this);
 		this.handleLangChange = this.handleLangChange.bind(this);
@@ -27,11 +35,15 @@ class UserContentList extends Component {
 			language: params.language ? params.language : this.state.language, 
 			region: params.region ? params.region : this.state.region, 
 			type: params.type ? params.type : this.state.type, 
+			sorttype: params.sorttype ? params.sorttype : this.state.sorttype, 
+			sortdir: params.sortdir ? params.sortdir : this.state.sortdir, 
 		};
 
 		var ajax_url = 'usercontentlist';
 		ajax_url = ajax_url+'/'+params.user+'/'+params.language;
 		ajax_url = ajax_url+'/'+params.region+'/'+params.type;
+		ajax_url = ajax_url+'/'+params.sorttype+'/'+params.sortdir;
+
 		fetch(SERVER_URL+ajax_url)
 		.then((res) => {
 			res.json() 
@@ -43,8 +55,10 @@ class UserContentList extends Component {
 				updateState.region = jsonResult.contentinfo.region;
 				updateState.type = jsonResult.contentinfo.type;
 				updateState.contents = jsonResult.contentlist;
+				updateState.sorttype = this.state.sorttype;
+				updateState.sortdir = this.state.sortdir;
 				this.setState(updateState);
-				// console.log(updateState);
+				// console.log(updateState); 
 			})			
 		})
 		.catch((err) => {
@@ -76,6 +90,8 @@ class UserContentList extends Component {
 				updateState.region = jsonResult.contentinfo.region;
 				updateState.type = jsonResult.contentinfo.type;
 				updateState.contents = jsonResult.contentlist;
+				updateState.sorttype = this.state.sorttype;
+				updateState.sortdir = this.state.sortdir;
 				this.setState(updateState);
 				console.log(updateState);
 			})			
@@ -92,7 +108,9 @@ class UserContentList extends Component {
 			user: parsedQuery.user, 
 			language: parsedQuery.language, 
 			region: parsedQuery.region, 
-			type: parsedQuery.type
+			type: parsedQuery.type,
+			sorttype: parsedQuery.sorttype,
+			sortdir: parsedQuery.sortdir,
 		};
 		this.getContentList(params);
 	}
