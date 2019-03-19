@@ -43,6 +43,7 @@ class UserContentList extends Component {
 		ajax_url = ajax_url+'/'+params.user+'/'+params.language;
 		ajax_url = ajax_url+'/'+params.region+'/'+params.type;
 		ajax_url = ajax_url+'/'+params.sorttype+'/'+params.sortdir;
+		// console.log(ajax_url);
 
 		fetch(SERVER_URL+ajax_url)
 		.then((res) => {
@@ -55,8 +56,8 @@ class UserContentList extends Component {
 				updateState.region = jsonResult.contentinfo.region;
 				updateState.type = jsonResult.contentinfo.type;
 				updateState.contents = jsonResult.contentlist;
-				updateState.sorttype = this.state.sorttype;
-				updateState.sortdir = this.state.sortdir;
+				updateState.sorttype = jsonResult.sortparams.type;
+				updateState.sortdir = jsonResult.sortparams.direction;
 				this.setState(updateState);
 				// console.log(updateState); 
 			})			
@@ -90,10 +91,10 @@ class UserContentList extends Component {
 				updateState.region = jsonResult.contentinfo.region;
 				updateState.type = jsonResult.contentinfo.type;
 				updateState.contents = jsonResult.contentlist;
-				updateState.sorttype = this.state.sorttype;
-				updateState.sortdir = this.state.sortdir;
+				updateState.sorttype = jsonResult.sortparams.type;
+				updateState.sortdir = jsonResult.sortparams.direction;
 				this.setState(updateState);
-				console.log(updateState);
+				// console.log(updateState);
 			})			
 		})
 		.catch((err) => {

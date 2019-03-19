@@ -109,7 +109,7 @@ module.exports = function(app, db) {
           res.send({'error':'An error has occurred'});
         } else {
           sortparams = { 
-            type: req.params.sorttype ? req.params.sorttype : 'rating', 
+            type: req.params.sorttype ? req.params.sorttype : 'release_date', 
             direction: req.params.sortdir ? req.params.sortdir : 'down' 
           };    
 
@@ -126,6 +126,8 @@ module.exports = function(app, db) {
               return (new Date(content1.release_date) > new Date(content2.release_date)) ? retval : -retval;
             }
           });
+
+          item.sortparams = sortparams;
     
           res.send(item);
           console.log(item);
