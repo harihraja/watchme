@@ -25,6 +25,8 @@ class UserContentList extends Component {
 		this.handleWatchedChange = this.handleWatchedChange.bind(this);
 		this.handleLangChange = this.handleLangChange.bind(this);
 		this.handleUpdate = this.handleUpdate.bind(this);
+		this.handleSort = this.handleSort.bind(this);
+
 	}
 	
 	getContentList(params) {
@@ -127,6 +129,15 @@ class UserContentList extends Component {
 		this.getContentList(params);
 	}
 
+	handleSort(event) {
+		console.log(event);
+		var params = {
+			sorttype : event.target.value,
+			sortdir : this.state.sortdir=='up' ? 'down' : 'up'
+		};
+		this.getContentList(params);
+	}
+
 	handleWatchedChange(event) {
 		// console.log('name: '+event.target.name);
 		// console.log('value: '+event.target.value);
@@ -181,17 +192,12 @@ class UserContentList extends Component {
 				</Row>
 				<Row className="show-grid">
 					<Col sm={6} smOffset={6}>
-						{/* <SplitButton title="Language" id="lang-choice">
-							<MenuItem eventKey="1">English</MenuItem>
-							<MenuItem eventKey="2">Hindi</MenuItem>
-							<MenuItem eventKey="3">Tamil</MenuItem>
-						</SplitButton> */}
 						<select value={this.state.language} onChange={this.handleLangChange}>
 							<option value="English">English</option>
 							<option value="Hindi">Hindi</option>
 							<option value="Tamil">Tamil</option>
 						</select>
-						<Button type="button" bsStyle="warning" bsSize="xsmall" onClick={this.handleUpdate}>Update</Button><br/>
+						<Button type="submit" bsStyle="warning" bsSize="xsmall" onClick={this.handleUpdate}>Update</Button><br/>
 					</Col>
 				</Row>
 				<Row className="show-grid">
@@ -199,10 +205,10 @@ class UserContentList extends Component {
 						<Table responsive condensed striped hover>
 							<thead>
 								<tr>
-									<th>Title</th>
-									<th>Rating</th>
-									<th>Release Date</th>
-									<th>Watched?</th>
+									<th><Button type="button" as="input" value="title" bsStyle="info" bsSize="xsmall" onClick={this.handleSort}>Title</Button></th>
+									<th><Button type="button" as="input" value="rating" bsStyle="info" bsSize="xsmall" onClick={this.handleSort}>Rating</Button></th>
+									<th><Button type="button" as="input" value="release_date" bsStyle="info" bsSize="xsmall" onClick={this.handleSort}>Release Date</Button></th>
+									<th><Button type="button" as="input" value="action" bsStyle="info" bsSize="xsmall" onClick={this.handleSort}>Watched?</Button></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -216,20 +222,6 @@ class UserContentList extends Component {
 												<option value="Yes">Yes</option>
 												<option value="No">No</option>
 											</select>
-											{/* <label class="bs-switch">
-												<input type="checkbox">
-													<span class="slider round"></span>
-												</input>
-											</label> */}
-											{/* <input type="checkbox"> </input> */}
-											{/* <div class="btn-group btn-group-toggle" data-toggle="buttons">
-												<label class="btn btn-secondary active">
-													<input type="radio" name="options" id="option1" autocomplete="off" checked> No </input> 
-												</label>
-												<label class="btn btn-secondary">
-													<input type="radio" name="options" id="option2" autocomplete="off"> Yes </input> 
-												</label>
-											</div> */}
 										</td>
 									</tr> 
 								))}
